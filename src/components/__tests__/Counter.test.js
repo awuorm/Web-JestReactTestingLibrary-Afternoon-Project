@@ -7,7 +7,7 @@ let tools;
 
 beforeEach(() => {
   rtl.cleanup();
-  tools = rtl.render(<Counter user="Peter" />);
+  tools = rtl.render(<Counter user="Peter" countLimit={100} />);
 });
 
 describe("Counter component", () => {
@@ -49,8 +49,8 @@ describe("Counter component", () => {
     expect(tools.queryByText(/-2/)).toBeInTheDocument();
   });
 
-  it("can reset the count clicking rest", () => {
-      const resetButton = tools.queryByTestId("resetButton");
+  it("can reset the count clicking reset", () => {
+    const resetButton = tools.queryByTestId("resetButton");
 
     rtl.fireEvent.click(resetButton);
     expect(tools.queryByText(/1/)).not.toBeInTheDocument();
@@ -62,18 +62,44 @@ describe("Counter component", () => {
   });
 
   it("prevents the count from going over an upper limit", () => {
-    // implement
+    const incButton = tools.queryByTestId("incButton");
+    let counter = 0;
+    while(counter < 101) {
+      rtl.fireEvent.click(incButton);
+      counter++;
+    }
+    expect(tools.queryByText(/100/)).toBeInTheDocument();
   });
 
   it("prevents the count from going under a lower limit", () => {
-    // implement
+    const decButton = tools.queryByTestId("decButton");
+    let counter = 0;
+    while(counter > -101) {
+      rtl.fireEvent.click(decButton);
+      counter--;
+    }
+    expect(tools.queryByText(/-100/)).toBeInTheDocument();
   });
 
   it("shows a warning once we hit the upper limit of the counter", () => {
-    // implement
+    const incButton = tools.queryByTestId("incButton");
+    let counter = 0;
+    while(counter < 101) {
+      rtl.fireEvent.click(incButton);
+      counter++;
+    }
+    expect(tools.queryByText(/100/)).toBeInTheDocument();
+    expect(tools.queryByText(/That's as high as peter's count will go/i)).toBeInTheDocument();
   });
 
   it("shows a warning once we hit the lower limit of the counter", () => {
-    // implement
+    const decButton = tools.queryByTestId("decButton");
+    let counter = 0;
+    while(counter > -101) {
+      rtl.fireEvent.click(decButton);
+      counter--;
+    }
+    expect(tools.queryByText(/-100/)).toBeInTheDocument();
+    expect(tools.queryByText(/That's as low as peter's count will go/i)).toBeInTheDocument();
   });
 });
